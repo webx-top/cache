@@ -8,9 +8,7 @@ import (
 	"github.com/webx-top/cache"
 )
 
-var _ cache.Cacher = New(1)
-
-func New(cap int, hooks ...func(string, *ttlmap.Item)) *TTLMap {
+func New(cap int, hooks ...func(string, *ttlmap.Item)) cache.Cacher {
 	r := &TTLMap{
 		Options: &ttlmap.Options{
 			InitialCapacity: cap,
