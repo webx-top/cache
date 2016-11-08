@@ -23,6 +23,7 @@ func New(cap int, hooks ...func(string, *ttlmap.Item)) cache.Cacher {
 	case 1:
 		r.Options.OnWillExpire = hooks[0]
 	}
+	r.Init()
 	return r
 }
 
@@ -55,10 +56,13 @@ func (t *TTLMap) Del(key string) error {
 
 func (t *TTLMap) Get(key string) (interface{}, error) {
 	item := t.m.Get(key)
+	if item == nil {
+		return nil, nil
+	}
 	if item.Expired() {
 		return nil, cache.ErrExpired
 	}
-	return item.Value, nil
+	return item.Value(), nil
 }
 
 func (t *TTLMap) Close() error {

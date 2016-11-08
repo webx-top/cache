@@ -5,7 +5,6 @@ import (
 )
 
 type Cacher interface {
-	Init() error
 	Open() error
 	Put(key string, value interface{}, lifetime time.Duration) error
 	Del(key string) error
