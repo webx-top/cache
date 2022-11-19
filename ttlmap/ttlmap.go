@@ -8,7 +8,7 @@ import (
 	"github.com/webx-top/cache"
 )
 
-func New(cap int, hooks ...func(string, *ttlmap.Item)) cache.Cacher {
+func New(cap int, hooks ...func(string, ttlmap.Item)) cache.Cacher {
 	r := &TTLMap{
 		Options: &ttlmap.Options{
 			InitialCapacity: cap,
@@ -46,7 +46,7 @@ func (t *TTLMap) Open() error {
 }
 
 func (t *TTLMap) Put(key string, value interface{}, lifetime time.Duration) error {
-	return t.m.Set(key, ttlmap.NewItemWithTTL(value, lifetime))
+	return t.m.Set(key, ttlmap.NewItem(value, ttlmap.WithTTL(lifetime)), nil)
 }
 
 func (t *TTLMap) Del(key string) error {
@@ -55,9 +55,9 @@ func (t *TTLMap) Del(key string) error {
 }
 
 func (t *TTLMap) Get(key string) (interface{}, error) {
-	item := t.m.Get(key)
-	if item == nil {
-		return nil, nil
+	item, err := t.m.Get(key)
+	if err != nil {
+		return nil, err
 	}
 	if item.Expired() {
 		return nil, cache.ErrExpired
